@@ -21,6 +21,8 @@ This project uses a Python virtual environment to manage dependencies. Follow th
 
 ### Running code
 
+Navigate to the root directory of the repo in the terminal of your choice, and run:
+
 python src/main.py --schedule=schedule.json \  
  --overrides=overrides.json \
  --from='2023-11-17T17:00:00Z' \
@@ -76,6 +78,14 @@ The project also includes an experimental TXT parser that supports natural langu
    ```
 2. The AI-related imports are implemented lazily to ensure standard functionality works without these additional dependencies.
 3. Be aware that we are currently using a nearly 3gb model, so please don't use txt input files unless you want the model to start downloading automatically
+
+Our design and use of a factory parser means that all you have to do to change parsers is change the schedule argument from schedule.json to schedule.txt:
+
+python src/main.py --schedule=schedule.txt \  
+ --overrides=overrides.json \
+ --from='2023-11-17T17:00:00Z' \
+ --until='2023-12-01T17:00:00Z'
+--output="output.json" (optional, output.json is default value)
 
 ### Scheduling
 
