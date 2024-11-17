@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Type, TypeVar, Dict, Any
 from pydantic import BaseModel
 from file_parser import FileParser, JsonParser
+from natural_language_parser import NaturalLanguageParser
 
 T = TypeVar('T', bound=BaseModel)
 
@@ -10,11 +11,13 @@ class ParserFactory:
     
     _parsers = {
         '.json': JsonParser,
+        '.txt': NaturalLanguageParser
     }
     
     # Define which arguments are valid for which parser types
     _parser_args = {
         JsonParser: set(),  # No special arguments
+        NaturalLanguageParser: set()
     }
     
     @classmethod

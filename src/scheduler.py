@@ -61,12 +61,11 @@ class BasicScheduleCreator(ScheduleCreator):
         
         # Calculate initial period and user
         interval = timedelta(days=schedule.handover_interval_days)
-        periods_since_start = (from_time - schedule.handover_start_at) // interval
+        periods_since_start = max(0, (from_time - schedule.handover_start_at) // interval) #handle case when negative
         user_index = int(periods_since_start) % len(schedule.users)
         
         # Iterate through periods from from_time to until_time
         current_period_start = schedule.handover_start_at + (periods_since_start * interval)
-        
         while current_period_start < until_time:
             current_period_end = min(current_period_start + interval, until_time)
             current_user = schedule.users[user_index]

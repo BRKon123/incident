@@ -1,2 +1,3 @@
-incidentenv/
+venv/
 __pycache__/
+.env
