@@ -67,7 +67,7 @@ The scheduler implementation uses the Strategy pattern:
 
 - `ScheduleCreator` abstract base class defines the scheduling interface
 - `BasicScheduleCreator` provides the default implementation
-- Additional scheduling strategies can be easily added
+- Additional scheduling strategies can be easily added (eg the priority based one I mention next)
 
 This architecture allows for:
 
@@ -78,4 +78,4 @@ This architecture allows for:
 
 # Future Ideas
 
-- priority based scheduler, so instead of naively considering who is due to be in a certain period and checking if there are no overrides. Instead you can store a priority queue of user alongside the time they have currently spent on call (using a min heap). So next user in schedule is determined by popping top item off the min heap
+- Priority based scheduler, so instead of naively considering who is due to be in a certain period and checking if there are no overrides. Instead you can store a priority queue of user alongside the time they have currently spent on call (using a min heap). So next user in schedule is determined by popping top item off the min heap
