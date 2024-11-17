@@ -18,7 +18,7 @@ class ScheduleCreator(ABC):
         pass
 
 class BasicScheduleCreator(ScheduleCreator):
-    """Implementation that prioritizes overrides over regular schedule."""
+    """Implementation where final result is as though you directly place overrides on top of orignal schedule"""
     
     def create_schedule(
         self,
