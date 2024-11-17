@@ -26,3 +26,9 @@ class Override(BaseModel):
 
 class Overrides(BaseModel):
     overrides: List[Override] 
+
+
+class ScheduleEntry(BaseModel):
+    user: str
+    start_at: datetime
+    end_at: datetime
