@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Tuple
 from models import Schedule, Overrides, ScheduleEntry
 
 class ScheduleCreator(ABC):
@@ -18,21 +18,17 @@ class ScheduleCreator(ABC):
         pass
 
 class BasicScheduleCreator(ScheduleCreator):
-    """Implementation where final result is as though you directly place overrides on top of orignal schedule"""
+    """Implementation such that ouptut is main schedule, with overrides put on top"""
     
-    def create_schedule(
+    def _process_overrides(
         self,
-        schedule: Schedule,
         overrides: Overrides,
         from_time: datetime,
         until_time: datetime
     ) -> List[ScheduleEntry]:
-        """Create schedule by first adding overrides, then filling gaps with regular schedule."""
+        """Process and validate overrides within the time window."""
+        override_entries: List[ScheduleEntry] = []
         
-        # Initialize result list
-        result: List[ScheduleEntry] = []
-        
-        # First, add all overrides that fall within our time window
         for override in overrides.overrides:
             # Skip if override is completely outside our window
             if override.end_at <= from_time or override.start_at >= until_time:
@@ -42,15 +38,26 @@ class BasicScheduleCreator(ScheduleCreator):
             entry_start = max(override.start_at, from_time)
             entry_end = min(override.end_at, until_time)
             
-            entry = ScheduleEntry(
+            override_entries.append(ScheduleEntry(
                 user=override.user,
                 start_at=entry_start,
                 end_at=entry_end
-            )
-            result.append(entry)
+            ))
         
-        # Sort overrides by start time, so that when we go through normal schedule know we can keep track of overs
-        result.sort(key=lambda x: x.start_at)
+        # Sort overrides by start time
+        override_entries.sort(key=lambda x: x.start_at)
+        return override_entries
+    
+    def _generate_schedule_entries(
+        self,
+        schedule: Schedule,
+        override_entries: List[ScheduleEntry],
+        from_time: datetime,
+        until_time: datetime
+    ) -> List[ScheduleEntry]:
+        """Generate schedule entries filling gaps between overrides."""
+        schedule_entries: List[ScheduleEntry] = []
+        override_idx = 0
         
         # Calculate initial period and user
         interval = timedelta(days=schedule.handover_interval_days)
@@ -67,25 +74,26 @@ class BasicScheduleCreator(ScheduleCreator):
             # Find available time slots in this period
             available_start = max(current_period_start, from_time)
             
-            for existing in result:
-                # If existing entry starts after period end, we're done with this period
-                if existing.start_at >= current_period_end:
-                    break
-                    
+            # Process overrides that affect this period
+            while (override_idx < len(override_entries) and 
+                   override_entries[override_idx].start_at < current_period_end):
+                override = override_entries[override_idx]
+                
                 # If there's space before this override, add an entry
-                if existing.start_at > available_start:
-                    result.append(ScheduleEntry(
+                if override.start_at > available_start:
+                    schedule_entries.append(ScheduleEntry(
                         user=current_user,
                         start_at=available_start,
-                        end_at=existing.start_at
+                        end_at=override.start_at
                     ))
                 
                 # Move available_start to after this override
-                available_start = max(available_start, existing.end_at)
+                available_start = max(available_start, override.end_at)
+                override_idx += 1
             
             # If there's space after last override in this period, add an entry
             if available_start < current_period_end:
-                result.append(ScheduleEntry(
+                schedule_entries.append(ScheduleEntry(
                     user=current_user,
                     start_at=available_start,
                     end_at=current_period_end
@@ -94,7 +102,27 @@ class BasicScheduleCreator(ScheduleCreator):
             # Move to next period and user
             current_period_start = current_period_end
             user_index = (user_index + 1) % len(schedule.users)
+            
+        return schedule_entries
+    
+    def create_schedule(
+        self,
+        schedule: Schedule,
+        overrides: Overrides,
+        from_time: datetime,
+        until_time: datetime
+    ) -> List[ScheduleEntry]:
+        """Create schedule by combining overrides and regular schedule entries."""
         
-        # Sort final result by start time
+        # Process overrides
+        override_entries = self._process_overrides(overrides, from_time, until_time)
+        
+        # Generate schedule entries around overrides
+        schedule_entries = self._generate_schedule_entries(
+            schedule, override_entries, from_time, until_time
+        )
+        
+        # Combine and sort all entries
+        result = override_entries + schedule_entries
         result.sort(key=lambda x: x.start_at)
         return result
