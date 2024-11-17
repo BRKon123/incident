@@ -61,6 +61,22 @@ This design allows for:
 - Simple addition of new file format support
 - Consistent parsing interface across the application
 
+#### Natural Language Parser (Experimental)
+
+The project also includes an experimental TXT parser that supports natural language queries. This parser demonstrates the extensibility of the parser architecture, though it's currently a proof-of-concept implementation only works on macs and has been tested very little on my laptop
+
+- Supports reading schedule information from plain text files
+- Uses LLM-powered natural language processing
+
+**Note:** To use the natural language parser functionality:
+
+1. Install the AI-specific dependencies instead of the standard requirements:
+   ```bash
+   pip install -r ai_requirements.txt
+   ```
+2. The AI-related imports are implemented lazily to ensure standard functionality works without these additional dependencies.
+3. Be aware that we are currently using a nearly 3gb model, so please don't use txt input files unless you want the model to start downloading automatically
+
 ### Scheduling
 
 The scheduler implementation uses the Strategy pattern:
