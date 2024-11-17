@@ -65,7 +65,8 @@ This design allows for:
 
 #### Natural Language Parser (Experimental)
 
-The project also includes an experimental TXT parser that supports natural language queries. This parser demonstrates the extensibility of the parser architecture, though it's currently a proof-of-concept implementation only works on macs and has been tested very little on my laptop
+The project also includes an experimental TXT parser that supports natural language queries. This parser demonstrates the extensibility of the parser architecture, though it's currently a proof-of-concept implementation only works on macs and has been tested very little on my laptop.
+It works through using the llm to generate a json string, and then parsing this
 
 - Supports reading schedule information from plain text files
 - Uses LLM-powered natural language processing
