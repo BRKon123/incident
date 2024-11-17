@@ -14,11 +14,6 @@ def main():
     parser.add_argument('--from', dest='from_time', required=True, help='Start time in ISO format')
     parser.add_argument('--until', required=True, help='End time in ISO format')
     parser.add_argument(
-        '--list-delimiter',
-        default='|',
-        help='Delimiter for lists in CSV files (default: |)'
-    )
-    parser.add_argument(
         '--output',
         default='output.json',
         help='Path to output JSON file (default: output.json)'
@@ -31,13 +26,11 @@ def main():
         schedule_parser = ParserFactory.create_parser(
             args.schedule, 
             Schedule,
-            list_delimiter=args.list_delimiter
         )
         
         overrides_parser = ParserFactory.create_parser(
             args.overrides, 
             Overrides,
-            list_delimiter=args.list_delimiter
         )
         
         # Parse datetime strings
