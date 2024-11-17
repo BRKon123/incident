@@ -95,3 +95,6 @@ This architecture allows for:
 # Future Ideas
 
 - Priority based scheduler, so instead of naively considering who is due to be in a certain period and checking if there are no overrides. Instead you can store a priority queue of user alongside the time they have currently spent on call (using a min heap). So next user in schedule is determined by popping top item off the min heap
+- Users can request for someone to cover for their shift. Other users can accept / reject these requests
+- Integration with users google / apple calenders with notifications and alerts to remind them when their shift is
+- A clean web interface for nice visualisation of the schedule, and easy interface to upload schedule / override files
