@@ -2,7 +2,7 @@ import argparse
 from datetime import datetime
 from typing import Dict, List
 from models import Schedule, Overrides
-from file_parser import JsonParser
+from parser_factory import ParserFactory
 
 def parse_datetime(dt_str: str) -> datetime:
     """Convert ISO format datetime string to datetime object."""
@@ -15,13 +15,27 @@ def main():
     parser.add_argument('--overrides', required=True, help='Path to overrides JSON file')
     parser.add_argument('--from', dest='from_time', required=True, help='Start time in ISO format')
     parser.add_argument('--until', required=True, help='End time in ISO format')
+    parser.add_argument(
+        '--list-delimiter',
+        default='|',
+        help='Delimiter for lists in CSV files (default: |)'
+    )
     
     # Parse arguments
     args = parser.parse_args()
     
     # Parse files with type validation
-    schedule_parser = JsonParser(args.schedule, Schedule)
-    overrides_parser = JsonParser(args.overrides, Overrides)
+    schedule_parser = ParserFactory.create_parser(
+      args.schedule, 
+      Schedule,
+      list_delimiter=args.list_delimiter
+    )
+        
+    overrides_parser = ParserFactory.create_parser(
+      args.overrides, 
+      Overrides,
+      list_delimiter=args.list_delimiter
+    )
     
     # Access the validated data
     schedule = schedule_parser.data
